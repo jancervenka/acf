@@ -4,6 +4,8 @@
 
 *A lightweight recommender engine for implicit feedback datasets*
 
+![](https://github.com/jancervenka/acf/workflows/CI/badge.svg)
+
 The package implements an algorithm described in
 [Collaborative Filtering for Implicit Feedback Datasets][1] paper. 
 The algorithm is based on the following ideas:
