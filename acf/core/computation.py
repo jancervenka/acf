@@ -6,20 +6,20 @@ import logging
 import functools
 import multiprocessing as mp
 
-from typing import (Callable,
+from typing import (Any,
+                    Callable,
                     Generator,
+                    List,
                     Optional,
-                    Tuple,
-                    Any,
-                    List)
+                    Tuple)
 
 import numpy as np
 import pandas as pd
 
 from .preprocessing import create_user_item_matrix
-from .utils import (check_columns_in_dataframe,
+from .utils import (cast_numeric_greater_than_zero,
+                    check_columns_in_dataframe,
                     check_feedback_column_numeric,
-                    cast_numeric_greater_than_zero,
                     get_index_position,
                     drop_warn_na)
 
@@ -32,10 +32,8 @@ DEFAULT_N_JOBS = 1
 
 # TODO: sparse R dataframe/matrix?
 # TODO: X/Y init - which distributions?
-# TODO: implement evaluation
 # TODO: _compute_factors_1d, _get_least_square_sum to algebra.py module?
-# TODO: predict multiple user_id, evaluation is then gonna be easy
-
+# TODO: predict (top_n)
 
 class Engine:
     """
@@ -65,7 +63,11 @@ class Engine:
                n_iter=20,
                n_jobs=4)
 
-    prediction = engine.predict(user_id=2491)
+    # get the best 20 recommendation for given user
+    prediction = engine.predict(user=2491, top_n=20)
+
+    # to print training loss value at every iteration
+    print(engine.loss)
     ```
     """
 
@@ -353,21 +355,29 @@ class Engine:
         finally:
             pool.close()
 
-    def predict(self, user_id: Any) -> pd.Series:
+    def predict(self, user: Any, top_n: Optional[int] = None) -> pd.Series:
         """
         Computes recommendations for given `user_id`.
 
         Args:
-            user_id: target of the recommendations
+            user: target of the recommendations
+            top_n: if not `None`, selects only the best n items
 
         Returns:
             series with predicted score for each item
         """
 
-        row = get_index_position(self._user_index, user_id)
+        row = get_index_position(self._user_index, user)
 
-        prediction = np.dot(self._Y, self._X[row, :])
-        return pd.Series(prediction, index=self._item_index, name=user_id)
+        prediction = pd.Series(
+            np.dot(self._Y, self._X[row, :]),
+            index=self._item_index,
+            name=user)
+
+        if top_n:
+            return prediction.nlargest(top_n)
+        else:
+            return prediction
 
     @property
     def user_factors(self) -> pd.DataFrame:
@@ -392,4 +402,12 @@ class Engine:
         return pd.DataFrame(self._Y, index=self._item_index)
 
     @property
-    def loss(self) -> List[np.float]: return self._loss
+    def loss(self) -> List[np.float]:
+        """
+        Training loss proprety.
+
+        Returns:
+            training loss by iteration
+        """
+
+        return self._loss

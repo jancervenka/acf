@@ -143,7 +143,7 @@ class EngineTest(unittest.TestCase):
     def test_predict() -> None:
         """
         Tests that `Engine.predict` computes correct
-        recommendation for given `user_id`.
+        recommendation for given `user`.
         """
 
         engine = Engine()
@@ -166,11 +166,17 @@ class EngineTest(unittest.TestCase):
         engine._user_index = pd.Index([10, 20], name='user_id')
         engine._item_index = pd.Index([3, 4, 5], name='item_id')
 
-        result = engine.predict(user_id=20)
+        result = engine.predict(user=20)
+        result_top_2 = engine.predict(user=20, top_n=2)
+
         expected = pd.Series(
             [0.7708, 0.9611, 0.1778], index=engine._item_index, name=20)
+        # calling .nlargest on series will sort the values (descending)
+        expected_top_2 = expected[
+            [True, True, False]].sort_values(ascending=False)
 
         pd.testing.assert_series_equal(result, expected)
+        pd.testing.assert_series_equal(result_top_2, expected_top_2)
 
     def test_get_loss(self) -> None:
         """

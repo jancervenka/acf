@@ -4,7 +4,7 @@
 
 import setuptools
 
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 
 
 def load_requirements():
@@ -32,7 +32,7 @@ def run_setup():
         'author_email': 'jan.cervenka@yahoo.com',
         'packages': ['acf', 'acf.core', 'acf.tests'],
         'python_requires': '>=3.7',
-        'install_requires': []}
+        'install_requires': load_requirements()}
     setuptools.setup(**setup_params)
 
 

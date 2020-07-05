@@ -4,8 +4,9 @@ __pycache__/
 .coverage
 *.ipynb_checkpoints
 *.egg-info
-model_files
 notebooks
 dist
 build
 test.py
+*.ipynb
+*.pyc

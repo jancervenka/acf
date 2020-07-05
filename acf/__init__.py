@@ -3,6 +3,7 @@
 # 2020, Jan Cervenka
 
 from .core.computation import Engine
+from .core import metrics
 
 __doc__ = """
 Lightweight recommender engine for implicit feedback datasets.
