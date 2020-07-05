@@ -17,7 +17,7 @@ The algorithm is based on the following ideas:
 
 ## Install
 
-The package requires Python `3.7` or newer, the only dependecies are
+The package requires Python `3.7` or newer, the only dependencies are
 `numpy` and `pandas`. To install it, run
 
 ```bash

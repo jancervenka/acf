@@ -5,6 +5,8 @@
 from .core.computation import Engine
 from .core import metrics
 
+from .version import __version__
+
 __doc__ = """
 Lightweight recommender engine for implicit feedback datasets.
 
