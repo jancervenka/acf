@@ -64,7 +64,7 @@ function that implements "mean rank" metric as defined by equation
 The metric is a weighted mean of percentile-ranked recommendations
 (`rank_ui = 0` says that item `i` is the first to be recommended for
 user `u` and item `j` with `rank_uj = 1` is the last to be recommended)
-where the weights are the feedback values from `R` user-item matrix.
+where the weights are the actual feedback values from `R` user-item matrix.
 
 ```python
 interactions_test = pd.read_csv('intercations_test.csv')

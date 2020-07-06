@@ -16,19 +16,19 @@ def mean_rank(interactions: pd.DataFrame,
               feedback_column: str,
               engine: computation.Engine) -> np.float:
     """
-    Computes mean rank metric for the supplied `interactions`
-    and trained `engine`.
+    Computes mean rank metric using real `interactions`
+    as ground truth and predictions produced by `engine`.
 
     The metric is defined as
+
     ```
     mean_rank := Σ_ui r_ui * rank_ui / Σ_ui r_ui
     ```
 
-    where is r_ui is a feedback value from matrix `R` between
-    user `u` and item `i`. and `rank_ui` is a recommendation rank
-    of item `i` for user `u`.
+    where `r_ui` is the feedback value between user `u` and item `i`
+    and `rank_ui` is the recommendation rank of item `i` for user `u`.
 
-   `rank_ui` is computed by inverse row-wise percentile ranking of
+    `rank_ui` is computed by inverse row-wise percentile ranking of
     values in `X * Y^T` prediction matrix. Value `r_ui = 0` means
     that item `i` is the first to be recommended for user `u`,
     `r_uj = 1` is the last to be recommended.

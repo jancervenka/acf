@@ -29,11 +29,10 @@ DEFAULT_N_FACTORS = 10
 DEFAULT_N_ITER = 20
 DEFAULT_N_JOBS = 1
 
-
 # TODO: sparse R dataframe/matrix?
 # TODO: X/Y init - which distributions?
 # TODO: _compute_factors_1d, _get_least_square_sum to algebra.py module?
-# TODO: predict (top_n)
+
 
 class Engine:
     """
@@ -113,10 +112,9 @@ class Engine:
         Computes a 1-dimensional factor array for either one user
         or one item.
 
-        When computing user factors, `feedback_1` is an array of
-        user interactions `r_u` with each item `i`, `other_factors`
-        is an item factor matrix `Y` and `other_factors_small` is an
-        `Y *
+        When computing user factors, `feedback_1` is an array of interactions
+        `r_u` between user `u` and every item, `other_factors` is an item
+        factor matrix `Y` and `other_factors_small` is `Y ^ T * Y`.
 
         When computing the user factors `x_u` for user `u`, the function
         solves a linear system
@@ -126,10 +124,10 @@ class Engine:
         ```
 
         where `Y` is an item factor matrix, `C^u` is a diagonal matrix
-        containing feedback `r_u` of user `u` for each item (the feedback
-        is transformed to `c_ii = 1 + alpha * r_ui`), `p_u` is a binary
-        vector of preferences of user `u` for each item, and `λ` is a
-        regularization lambda.
+        containing feedback `r_u` of user `u` for each item `i` (the
+        feedback is transformed to `c_ii = 1 + alpha * r_ui`), `p_u`
+        is a binary vector of preferences of user `u` for each item,
+        and `λ` is regularization lambda.
 
         The computation is symmetric for item factors.
 
@@ -279,8 +277,8 @@ class Engine:
                         R: pd.DataFrame,
                         n_iter: int) -> Tuple[np.array]:
         """
-        Initializes `X`, `Y` matrices and runs ALS
-        (alternating least squares) iterations.
+        Initializes `X`, `Y` matrices and runs
+        alternating least squares iterations.
 
         Args:
             pool: multiprocessing pool
@@ -357,7 +355,7 @@ class Engine:
 
     def predict(self, user: Any, top_n: Optional[int] = None) -> pd.Series:
         """
-        Computes recommendations for given `user_id`.
+        Computes recommendations for given `user`.
 
         Args:
             user: target of the recommendations
