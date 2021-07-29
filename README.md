@@ -4,7 +4,9 @@
 
 *A lightweight recommender engine for implicit feedback datasets*
 
-![](https://github.com/jancervenka/acf/workflows/CI/badge.svg)
+![PyPI](https://badge.fury.io/py/acf.svg)
+![Test](https://github.com/jancervenka/acf/actions/workflows/test.yml/badge.svg)
+![Publish](https://github.com/jancervenka/acf/actions/workflows/publish.yml/badge.svg)
 
 The package implements an algorithm described in
 [Collaborative Filtering for Implicit Feedback Datasets][1] paper. 
@@ -21,7 +23,7 @@ The package requires Python `3.7` or newer, the only dependencies are
 `numpy` and `pandas`. To install it, run
 
 ```bash
-python setup.py install
+pip install acf
 ```
 
 ## Usage
