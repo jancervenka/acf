@@ -10,11 +10,13 @@ from . import computation
 from .preprocessing import create_user_item_matrix
 
 
-def mean_rank(interactions: pd.DataFrame,
-              user_column: str,
-              item_column: str,
-              feedback_column: str,
-              engine: computation.Engine) -> np.float:
+def mean_rank(
+    interactions: pd.DataFrame,
+    user_column: str,
+    item_column: str,
+    feedback_column: str,
+    engine: computation.Engine,
+) -> np.float:
     """
     Computes mean rank metric using real `interactions`
     as ground truth and predictions produced by `engine`.
@@ -52,15 +54,18 @@ def mean_rank(interactions: pd.DataFrame,
         interactions=interactions,
         user_column=user_column,
         item_column=item_column,
-        feedback_column=feedback_column)
+        feedback_column=feedback_column,
+    )
 
     user_ids, item_ids = R.index.tolist(), R.columns.tolist()
 
     # prediction = X * Y ^ T
     # ranks = apply rank row wise on prediction
-    ranks = engine.user_factors.loc[user_ids, :].dot(
-            engine.item_factors.loc[item_ids, :].T).rank(
-                pct=True, ascending=False, axis=1)
+    ranks = (
+        engine.user_factors.loc[user_ids, :]
+        .dot(engine.item_factors.loc[item_ids, :].T)
+        .rank(pct=True, ascending=False, axis=1)
+    )
 
     # multiply ranks with R element-wise, make a sum and divide by R sum
     return R.mul(ranks).sum().sum() / R.sum().sum()

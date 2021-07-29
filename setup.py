@@ -4,19 +4,7 @@
 
 import setuptools
 
-VERSION = '0.2.1'
-
-
-def load_requirements():
-    """
-    Loads `requirements.txt`.
-
-    Returns:
-        list of requirements
-    """
-
-    with open('requirements.txt') as f:
-        return [req for req in f.read().split() if req]
+VERSION = "0.2.2"
 
 
 def run_setup():
@@ -25,16 +13,17 @@ def run_setup():
     """
 
     setup_params = {
-        'name': 'acf',
-        'version': VERSION,
-        'description': 'Lightweight recommender engine',
-        'author': 'Jan Cervenka',
-        'author_email': 'jan.cervenka@yahoo.com',
-        'packages': ['acf', 'acf.core', 'acf.tests'],
-        'python_requires': '>=3.7',
-        'install_requires': load_requirements()}
+        "name": "acf",
+        "version": VERSION,
+        "description": "Lightweight recommender engine",
+        "author": "Jan Cervenka",
+        "author_email": "jan.cervenka@yahoo.com",
+        "packages": ["acf", "acf.core", "acf.tests"],
+        "python_requires": ">=3.7",
+        "install_requires": ["pandas>=1.0", "numpy>=1.16"],
+    }
     setuptools.setup(**setup_params)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_setup()

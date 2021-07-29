@@ -10,8 +10,7 @@ import numpy as np
 import pandas as pd
 
 
-def check_columns_in_dataframe(df: pd.DataFrame,
-                               columns: Tuple[str]) -> None:
+def check_columns_in_dataframe(df: pd.DataFrame, columns: Tuple[str]) -> None:
     """
     Raises an exception if any column name in `columns` is not
     present in `df` dataframe.
@@ -23,11 +22,12 @@ def check_columns_in_dataframe(df: pd.DataFrame,
 
     for col in columns:
         if col not in df.columns:
-            raise ValueError(f'Column {col} is not in the dataframe.')
+            raise ValueError(f"Column {col} is not in the dataframe.")
 
 
-def check_feedback_column_numeric(interactions: pd.DataFrame,
-                                  feedback_column: str) -> None:
+def check_feedback_column_numeric(
+    interactions: pd.DataFrame, feedback_column: str
+) -> None:
     """
     Raises an exception if `feedback_column` does not contain numeric values.
 
@@ -52,19 +52,19 @@ def drop_warn_na(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     n_0 = len(df)
-    df = df.dropna(how='any')
+    df = df.dropna(how="any")
 
     if len(df) < n_0:
         warnings.warn(
-            f'NA values found in the dataframe,'
-            f' {n_0 - len(df)} rows removed.')
+            f"NA values found in the dataframe," f" {n_0 - len(df)} rows removed."
+        )
 
     return df
 
 
-def cast_numeric_greater_than_zero(value: Any,
-                                   value_name: str,
-                                   required_type: type) -> None:
+def cast_numeric_greater_than_zero(
+    value: Any, value_name: str, required_type: type
+) -> None:
     """
     Checks that `value` is greater than zero and casts
     it to `required_type`.
@@ -84,13 +84,12 @@ def cast_numeric_greater_than_zero(value: Any,
         value = required_type(value)
 
     if value <= 0:
-        raise ValueError(f'Value {value_name} must be greater than zero.')
+        raise ValueError(f"Value {value_name} must be greater than zero.")
 
     return value
 
 
-def get_index_position(index: pd.Index,
-                       index_value: Any) -> np.int64:
+def get_index_position(index: pd.Index, index_value: Any) -> np.int64:
     """
     Finds position of `index_value` in `index` array.
     This functions is used to find row number of given
@@ -109,9 +108,9 @@ def get_index_position(index: pd.Index,
 
     pos = np.where(index == index_value)[0]
     if len(pos) > 1:
-        raise ValueError('Index is not unique.')
+        raise ValueError("Index is not unique.")
 
     if len(pos) == 0:
-        raise ValueError(f'index_value = {index_value} not found in the index.')
+        raise ValueError(f"index_value = {index_value} not found in the index.")
 
     return pos[0]

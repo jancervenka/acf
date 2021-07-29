@@ -23,20 +23,22 @@ class MeanRankTest(unittest.TestCase):
 
         engine = mock.Mock()
 
-        engine.user_factors = pd.DataFrame({
-            0: [0.5, 0.1, 0.9],
-            1: [0.1, 0.2, 0.5]},
-            index=['u1', 'u2', 'u3'])
+        engine.user_factors = pd.DataFrame(
+            {0: [0.5, 0.1, 0.9], 1: [0.1, 0.2, 0.5]}, index=["u1", "u2", "u3"]
+        )
 
-        engine.item_factors = pd.DataFrame({
-            0: [0.1, 0.2, 0.3, 0.3],
-            1: [0.5, 0.9, 0.9, 0.7]},
-            index=['i1', 'i2', 'i3', 'i4'])
+        engine.item_factors = pd.DataFrame(
+            {0: [0.1, 0.2, 0.3, 0.3], 1: [0.5, 0.9, 0.9, 0.7]},
+            index=["i1", "i2", "i3", "i4"],
+        )
 
-        test_interactions = pd.DataFrame({
-            'user_id': ['u1', 'u1', 'u1', 'u2', 'u2', 'u3', 'u3', 'u3', 'u3'],
-            'item_id': ['i1', 'i2', 'i4', 'i2', 'i3', 'i1', 'i2', 'i3', 'i4'],
-            'feedback': [4, 2, 1, 5, 10, 9, 8, 12, 8]})
+        test_interactions = pd.DataFrame(
+            {
+                "user_id": ["u1", "u1", "u1", "u2", "u2", "u3", "u3", "u3", "u3"],
+                "item_id": ["i1", "i2", "i4", "i2", "i3", "i1", "i2", "i3", "i4"],
+                "feedback": [4, 2, 1, 5, 10, 9, 8, 12, 8],
+            }
+        )
 
         # R =
         # 4 2  0 1
@@ -55,14 +57,15 @@ class MeanRankTest(unittest.TestCase):
 
         result = mean_rank(
             interactions=test_interactions,
-            user_column='user_id',
-            item_column='item_id',
-            feedback_column='feedback',
-            engine=engine)
+            user_column="user_id",
+            item_column="item_id",
+            feedback_column="feedback",
+            engine=engine,
+        )
 
         expected = 33 / 59
         self.assertEqual(result, expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -5,10 +5,9 @@
 import pandas as pd
 
 
-def create_user_item_matrix(interactions: pd.DataFrame,
-                            user_column: str,
-                            item_column: str,
-                            feedback_column: str) -> pd.DataFrame:
+def create_user_item_matrix(
+    interactions: pd.DataFrame, user_column: str, item_column: str, feedback_column: str
+) -> pd.DataFrame:
     """
     Creates `R` from `interactions` dataframe by pivoting it
     from long to wide format.
@@ -24,7 +23,6 @@ def create_user_item_matrix(interactions: pd.DataFrame,
     """
 
     # handles user-item duplicates by suming the feedback
-    return interactions.pivot_table(index=user_column,
-                                    columns=item_column,
-                                    aggfunc='sum',
-                                    values=feedback_column).fillna(0)
+    return interactions.pivot_table(
+        index=user_column, columns=item_column, aggfunc="sum", values=feedback_column
+    ).fillna(0)

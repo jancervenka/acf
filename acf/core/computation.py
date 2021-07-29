@@ -6,22 +6,19 @@ import logging
 import functools
 import multiprocessing as mp
 
-from typing import (Any,
-                    Callable,
-                    Generator,
-                    List,
-                    Optional,
-                    Tuple)
+from typing import Any, Callable, Iterable, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 
 from .preprocessing import create_user_item_matrix
-from .utils import (cast_numeric_greater_than_zero,
-                    check_columns_in_dataframe,
-                    check_feedback_column_numeric,
-                    get_index_position,
-                    drop_warn_na)
+from .utils import (
+    cast_numeric_greater_than_zero,
+    check_columns_in_dataframe,
+    check_feedback_column_numeric,
+    get_index_position,
+    drop_warn_na,
+)
 
 DEFAULT_REG_LAMBDA = 0.1
 DEFAULT_ALPHA = 40
@@ -70,11 +67,13 @@ class Engine:
     ```
     """
 
-    def __init__(self,
-                 reg_lambda: float = DEFAULT_REG_LAMBDA,
-                 alpha: float = DEFAULT_ALPHA,
-                 n_factors: int = DEFAULT_N_FACTORS,
-                 random_state: Optional[int] = None):
+    def __init__(
+        self,
+        reg_lambda: float = DEFAULT_REG_LAMBDA,
+        alpha: float = DEFAULT_ALPHA,
+        n_factors: int = DEFAULT_N_FACTORS,
+        random_state: Optional[int] = None,
+    ):
         """
         Initializes the class with model hyperparameters
         and `random_state`.
@@ -87,11 +86,10 @@ class Engine:
         """
 
         self._reg_lambda = cast_numeric_greater_than_zero(
-            reg_lambda, 'reg_lambda', float)
-        self._alpha = cast_numeric_greater_than_zero(
-            alpha, 'alpha', float)
-        self._n_factors = cast_numeric_greater_than_zero(
-            n_factors, 'n_factors', int)
+            reg_lambda, "reg_lambda", float
+        )
+        self._alpha = cast_numeric_greater_than_zero(alpha, "alpha", float)
+        self._n_factors = cast_numeric_greater_than_zero(n_factors, "n_factors", int)
 
         if random_state:
             self._rng = np.random.RandomState(random_state)
@@ -103,11 +101,13 @@ class Engine:
         self._loss = []
 
     @staticmethod
-    def _compute_factors_1d(feedback_1d: np.array,
-                            other_factors: np.array,
-                            other_factors_small: np.array,
-                            reg_lambda: float,
-                            alpha: float) -> np.array:
+    def _compute_factors_1d(
+        feedback_1d: np.array,
+        other_factors: np.array,
+        other_factors_small: np.array,
+        reg_lambda: float,
+        alpha: float,
+    ) -> np.array:
         """
         Computes a 1-dimensional factor array for either one user
         or one item.
@@ -141,20 +141,22 @@ class Engine:
         Returns:
             1-dimensional factor array for one user/item
         """
-        p_ = (feedback_1d > 0).astype('uint8')
+        p_ = (feedback_1d > 0).astype("uint8")
         C_ = np.diag(1 + alpha * feedback_1d)
 
         size, f = other_factors.shape
 
-        M = other_factors_small + np.linalg.multi_dot([
-            other_factors.T, C_ - np.eye(size), other_factors])
+        M = other_factors_small + np.linalg.multi_dot(
+            [other_factors.T, C_ - np.eye(size), other_factors]
+        )
 
         return np.linalg.solve(
-            M + reg_lambda * np.eye(f), np.linalg.multi_dot([other_factors.T, C_, p_]))
+            M + reg_lambda * np.eye(f), np.linalg.multi_dot([other_factors.T, C_, p_])
+        )
 
-    def _create_worker(self,
-                       other_factors: np.array,
-                       other_factors_small: np.array) -> Callable:
+    def _create_worker(
+        self, other_factors: np.array, other_factors_small: np.array
+    ) -> Callable:
         """
         Creates a callable worker from `Engine._compute_factors_1d` for
         application over `R` rows/columns in multiprocessing map.
@@ -176,11 +178,11 @@ class Engine:
             other_factors=other_factors,
             other_factors_small=other_factors_small,
             reg_lambda=self._reg_lambda,
-            alpha=self._alpha)
+            alpha=self._alpha,
+        )
 
     @staticmethod
-    def _feedback_1d_generator(R: pd.DataFrame,
-                               axis: int) -> Generator[np.array, None, None]:
+    def _feedback_1d_generator(R: pd.DataFrame, axis: int) -> Iterable[np.array]:
         """
         Creates a generator from `R` rows or columns.
         Each item in the generator is a numpy array.
@@ -196,11 +198,9 @@ class Engine:
         for _, r in R.iterrows() if axis else R.iteritems():
             yield r.values
 
-    def _compute_factors(self,
-                         pool,
-                         R: pd.DataFrame,
-                         other_factors: np.array,
-                         axis: int) -> np.array:
+    def _compute_factors(
+        self, pool, R: pd.DataFrame, other_factors: np.array, axis: int
+    ) -> np.array:
         """
         Applies `Engine._compute_factors_1d` over `R` rows/columns
         to compute factors for all user/items.
@@ -235,8 +235,7 @@ class Engine:
             tuple of X, Y factor matrices
         """
 
-        return (self._rng.rand(m, self._n_factors),
-                self._rng.rand(n, self._n_factors))
+        return (self._rng.rand(m, self._n_factors), self._rng.rand(n, self._n_factors))
 
     def _get_loss(self, X: np.array, Y: np.array, R: np.array) -> np.float:
         """
@@ -255,7 +254,7 @@ class Engine:
             loss value
         """
 
-        P = (R > 0).astype('uint8')
+        P = (R > 0).astype("uint8")
         C = 1 + self._alpha * R
 
         return np.sum(C * (P - np.dot(X, Y.T)) ** 2)
@@ -270,12 +269,9 @@ class Engine:
             loss: value to log
         """
 
-        logging.info(f'Iteration {iteration:04d} Loss Σ = {loss:.5f}')
+        logging.info(f"Iteration {iteration:04d} Loss Σ = {loss:.5f}")
 
-    def _run_iterations(self,
-                        pool,
-                        R: pd.DataFrame,
-                        n_iter: int) -> Tuple[np.array]:
+    def _run_iterations(self, pool, R: pd.DataFrame, n_iter: int) -> Tuple[np.array]:
         """
         Initializes `X`, `Y` matrices and runs
         alternating least squares iterations.
@@ -299,13 +295,15 @@ class Engine:
 
         return X, Y
 
-    def fit(self,
-            interactions: pd.DataFrame,
-            user_column: str,
-            item_column: str,
-            feedback_column: str,
-            n_iter: int = DEFAULT_N_ITER,
-            n_jobs: int = DEFAULT_N_JOBS) -> None:
+    def fit(
+        self,
+        interactions: pd.DataFrame,
+        user_column: str,
+        item_column: str,
+        feedback_column: str,
+        n_iter: int = DEFAULT_N_ITER,
+        n_jobs: int = DEFAULT_N_JOBS,
+    ) -> None:
         """
         Fits the model by factorizing `interactions` into latent factors.
 
@@ -329,19 +327,22 @@ class Engine:
         """
 
         check_columns_in_dataframe(
-            interactions, (user_column, item_column, feedback_column))
+            interactions, (user_column, item_column, feedback_column)
+        )
         check_feedback_column_numeric(interactions, feedback_column)
 
         interactions = drop_warn_na(
-            interactions[[user_column, item_column, feedback_column]])
+            interactions[[user_column, item_column, feedback_column]]
+        )
 
-        n_iter = cast_numeric_greater_than_zero(n_iter, 'n_iter', int)
+        n_iter = cast_numeric_greater_than_zero(n_iter, "n_iter", int)
 
         R = create_user_item_matrix(
             interactions=interactions,
             user_column=user_column,
             item_column=item_column,
-            feedback_column=feedback_column)
+            feedback_column=feedback_column,
+        )
 
         self._user_index, self._item_index = R.index, R.columns
 
@@ -368,9 +369,8 @@ class Engine:
         row = get_index_position(self._user_index, user)
 
         prediction = pd.Series(
-            np.dot(self._Y, self._X[row, :]),
-            index=self._item_index,
-            name=user)
+            np.dot(self._Y, self._X[row, :]), index=self._item_index, name=user
+        )
 
         if top_n:
             return prediction.nlargest(top_n)

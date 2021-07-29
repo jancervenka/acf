@@ -20,14 +20,14 @@ class CheckColumnsInDataFrameTest(unittest.TestCase):
         Sets up the tests.
         """
 
-        self._test_df = pd.DataFrame({'x': [1], 'y': [1], 'z': [1]})
+        self._test_df = pd.DataFrame({"x": [1], "y": [1], "z": [1]})
 
     def test_all_columns_in_dataframe(self) -> None:
         """
         Tests that no exception is raised if a column is present.
         """
 
-        tests = (tuple(), ('x', 'y'), ('x',), ('x', 'y', 'z'))
+        tests = (tuple(), ("x", "y"), ("x",), ("x", "y", "z"))
         for columns in tests:
             utils.check_columns_in_dataframe(self._test_df, columns)
 
@@ -36,7 +36,7 @@ class CheckColumnsInDataFrameTest(unittest.TestCase):
         Tests that an exception is raised if a column is not present.
         """
 
-        for columns in (('a'), ('x', 'a')):
+        for columns in (("a"), ("x", "a")):
             with self.assertRaises(ValueError):
                 utils.check_columns_in_dataframe(self._test_df, columns)
 
@@ -51,14 +51,14 @@ class CheckFeedbackColumnNumericTest(unittest.TestCase):
         Sets up the tests.
         """
 
-        self._test_df = pd.DataFrame({'x': ['a', 'b'], 'y': [1, 3]})
+        self._test_df = pd.DataFrame({"x": ["a", "b"], "y": [1, 3]})
 
     def test_feedback_column_is_numeric(self) -> None:
         """
         Tests that no exception is raised if the feedback column is numeric.
         """
 
-        utils.check_feedback_column_numeric(self._test_df, 'y')
+        utils.check_feedback_column_numeric(self._test_df, "y")
 
     def test_feedback_column_not_numeric(self) -> None:
         """
@@ -67,7 +67,7 @@ class CheckFeedbackColumnNumericTest(unittest.TestCase):
         """
 
         with self.assertRaises(ValueError):
-            utils.check_feedback_column_numeric(self._test_df, 'x')
+            utils.check_feedback_column_numeric(self._test_df, "x")
 
 
 class DropWarnNaTest(unittest.TestCase):
@@ -81,8 +81,8 @@ class DropWarnNaTest(unittest.TestCase):
         value is present.
         """
 
-        test_df = pd.DataFrame({'x': [1., 2., np.nan]})
-        expected = pd.DataFrame({'x': [1., 2.]})
+        test_df = pd.DataFrame({"x": [1.0, 2.0, np.nan]})
+        expected = pd.DataFrame({"x": [1.0, 2.0]})
 
         with self.assertWarns(UserWarning):
             result = utils.drop_warn_na(test_df)
@@ -95,8 +95,8 @@ class DropWarnNaTest(unittest.TestCase):
         Tests that original dataframe is returned when no NA is present.
         """
 
-        test_df = expected = pd.DataFrame({'x': [1, 2]})
-        expected = pd.DataFrame({'x': [1, 2]})
+        test_df = expected = pd.DataFrame({"x": [1, 2]})
+        expected = pd.DataFrame({"x": [1, 2]})
 
         result = utils.drop_warn_na(test_df)
         pd.testing.assert_frame_equal(result, expected)
@@ -112,13 +112,12 @@ class CastNumericGreaterThanZeroTest(unittest.TestCase):
         Tests that compatible `value` are correctly cast to `required_type`.
         """
 
-        tests = ((1, 'test', int, 1),
-                 (2.3, 'test', float, 2.3),
-                 (1.2, 'test', int, 1))
+        tests = ((1, "test", int, 1), (2.3, "test", float, 2.3), (1.2, "test", int, 1))
 
         for value, value_name, required_type, expected in tests:
             result = utils.cast_numeric_greater_than_zero(
-                value, value_name, required_type)
+                value, value_name, required_type
+            )
 
             self.assertEqual(result, expected)
 
@@ -129,7 +128,7 @@ class CastNumericGreaterThanZeroTest(unittest.TestCase):
         """
 
         with self.assertRaises(ValueError):
-            _ = utils.cast_numeric_greater_than_zero('test', 'test', float)
+            _ = utils.cast_numeric_greater_than_zero("test", "test", float)
 
     def test_value_not_greater_than_zero(self) -> None:
         """
@@ -138,7 +137,7 @@ class CastNumericGreaterThanZeroTest(unittest.TestCase):
         """
 
         with self.assertRaises(ValueError):
-            _ = utils.cast_numeric_greater_than_zero(-1, 'test', float)
+            _ = utils.cast_numeric_greater_than_zero(-1, "test", float)
 
 
 class GetIndexPositionTest(unittest.TestCase):
@@ -184,5 +183,5 @@ class GetIndexPositionTest(unittest.TestCase):
         self.assertEqual(result, expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
